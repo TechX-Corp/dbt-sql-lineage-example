@@ -1,6 +1,6 @@
 WITH cst_ip_x_ip as (SELECT sbj_ip_id,
     obj_ip_code
-    FROM "ead_data_prod"."vpb_golden"."cst_ip_x_ip_rltnp__s2"
+    FROM "ead_data_prod"."gold_zone"."cst_ip_x_ip_rltnp__s2"
     WHERE dbt_valid_from <= cast('2024-04-01' AS date)
     AND nvl(dbt_valid_to,'2400-01-01') > cast('2024-04-01' AS date)
     AND src_stm_code = 'WAY4_CLIENT' ---sua dk sang bang ref_cv__mnp)
@@ -65,22 +65,22 @@ card.intr_cst_code:: varchar(32) AS intro_cust_code,
 card_acm.card_dsgn_code::varchar(32) AS card_design_code,
 card.adl_inf:: varchar(256) AS addtl_info,
 card.w4_br_code:: varchar(10) AS w4_branch_code,
-card.fee_wv_yr_nbr:: varchar(32) AS fee_waived_year_nbr, --term add new 20240813
-card.ref_txn_ar_code:: varchar(256) AS ref_txn_contract_code --term add new 20240813
-FROM "ead_data_prod"."vpb_golden"."ast_card_inf_prfl__mnp" card
-LEFT JOIN "ead_data_prod"."vpb_golden"."ast_card_inf_acm_prfl__mnp" card_acm
+card.fee_wv_yr_nbr:: varchar(32) AS fee_waived_year_nbr, 
+card.ref_txn_ar_code:: varchar(256) AS ref_txn_contract_code
+FROM "ead_data_prod"."gold_zone"."ast_card_inf_prfl__mnp" card
+LEFT JOIN "ead_data_prod"."gold_zone"."ast_card_inf_acm_prfl__mnp" card_acm
 ON card.pymtc_id = card_acm.pymtc_id
 AND card.tf_partition_date = card_acm.tf_partition_date
 LEFT JOIN cst_ip_x_ip
 ON cst_ip_x_ip.sbj_ip_id = card.cst_dtl_id
-LEFT JOIN "ead_data_prod"."vpb_golden"."ar_card_inf_acm_prfl__mnp" card_ar
+LEFT JOIN "ead_data_prod"."gold_zone"."ar_card_inf_acm_prfl__mnp" card_ar
 ON card.ar_id = card_ar.ar_id
 AND card.tf_partition_date = card_ar.tf_partition_date
 WHERE card.tf_partition_date = cast('2024-04-01' AS date)
 AND EXISTS
 (
 SELECT 1
-FROM "ead_data_prod"."vpb_golden"."ar_x_cl_pst_way4__s2" arxcl
+FROM "ead_data_prod"."gold_zone"."ar_x_cl_pst_way4__s2" arxcl
 WHERE arxcl.dbt_valid_from <= cast('2024-04-01' AS date )
 AND nvl(arxcl.dbt_valid_to,'2400-01-01') > cast('2024-04-01' AS date )
 AND card.ar_id = arxcl.ar_id
